@@ -214,7 +214,7 @@ const abrirCarrito = () => {
         
                 <div class="card">
                   <div class="card-body">
-                    <button type="button" class="btn btn-warning btn-block btn-lg">Proceder a pagar</button>
+                    <button type="button" id="botonPagar" class="btn btn-warning btn-block btn-lg">Proceder a pagar</button>
                   </div>
                 </div>
         
