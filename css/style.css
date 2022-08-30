@@ -591,6 +591,9 @@ ul.top_icon li a {
      height: 10px;
      border-right: 1px dotted #999;
 }
+.displaynone{
+     display: none;
+}
 
 .top-menu-left li:last-child::before {
      display: none;
@@ -599,6 +602,11 @@ ul.top_icon li a {
 .top-menu-left li:last-child {
      padding: 0px;
      margin: 0px;
+}
+.preciototal{
+     display: flex;
+     justify-content: center;
+     align-items: center;
 }
 
 .top-menu-left li a {

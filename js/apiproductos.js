@@ -1,9 +1,19 @@
-document.addEventListener('DOMContentLoaded', e => {
+/* document.addEventListener('DOMContentLoaded', e => {
     trearJson()
 
-})
-const productosML = []
-const productosJson = []
+}) */
+
+const productosML = [];
+const productosJson = [];
+const carrito = [{ 
+    id: 4,
+    nombre:"Ampli Easy",
+    precio: 80000,
+    stock:5,
+    descripcion:"Ampli Easy",
+    img:"https://www.gaesmedica.com/es-es/uploads/imgen/3318_960x960-imgen-3318-ampli-easy-b-2-1280x1280.jpeg",
+    cantidad:1
+}];
 
 const botonMc = document.getElementById("botonMc")
 const botonJson = document.getElementById("botonJson")
@@ -28,8 +38,9 @@ const trearInfo = async () => {
 
 const trearJson = async () => {
     
-    let response = await fetch("./productos.json")
+    let response = await fetch("../productos.json")
     let data = await response.json()
+    console.log(data)
     
     productosJson.push(...data)
     
@@ -48,9 +59,10 @@ const trearJson = async () => {
 
 }
 
+
 const pagar = async () => {
 
-    const productosToMap = productosJson.map(Element => {
+    const productosToMap = carrito.map(Element => {
         let nuevoElemento = {
             title: Element.nombre,
             picture_url: Element.img,

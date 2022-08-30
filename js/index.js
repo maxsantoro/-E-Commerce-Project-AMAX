@@ -5,8 +5,15 @@ let plant = document.getElementById("plant");
 let body = document.getElementById("bodycontenedor");
 let displayCarrito = document.getElementById("abrircarrito");
 let cardCarrito = document.getElementById("cardCarrito");
-let padre = document.getElementById("plant");
+let padre = document.getElementById("planta");
 let cerrarCarrito = document.querySelector(".display");
+let section = document.getElementById("sectioncarrito");
+let preciototal = document.getElementById("preciototal")
+
+document.addEventListener("DOMContentLoaded", () => {
+  fetchProductos();
+});
+
 
 //Productos
 let carrito = [];
@@ -17,166 +24,129 @@ class Product {
     this.id = id;
     this.nombre = nombre;
     this.precio = precio;
-    this.stock = stock,
-    this.descripcion = descripcion;
+    (this.stock = stock), (this.descripcion = descripcion);
     this.img = img;
     this.cantidad = cantidad;
   }
 }
+const miLocalStorage = window.localStorage;
+const fetchProductos = async () => {
+  try {
+    const response = await fetch("../productos.json");
+    const datos = await response.json();
 
-productos.push(
-  new Product(
-    1,
-    "Ampli Mini",
-    50000,
-    5,
-    "Ampli Mini",
-    "https://www.gaesmedica.com/es-es/uploads/imgen/3307_960x960-imgen-3307-ampli-mini-i-5-1280x1280.jpeg",
-    1
-  )
-);
-productos.push(
-  new Product(
-    2,
-    "Ampli Connect",
-    60000,
-    5,
-    "Ampli Connect",
-    "https://www.gaesmedica.com/es-es/uploads/imgen/3315_960x960-imgen-3315-ampli-connect-b-5-1280x1280.jpeg",
-    1
-  )
-);
-productos.push(
-  new Product(
-    3,
-    "Ampli Energy",
-    70000,
-    5,
-    "Ampli Energy",
-    "https://www.gaesmedica.com/es-es/uploads/imgen/3321_960x960-imgen-3321-ampli-energy-b-5-1280x1280.jpeg",
-    1
-  )
-);
-productos.push(
-  new Product(
-    4,
-    "Ampli Easy",
-    80000,
-    5,
-    "Ampli Easy",
-    "https://www.gaesmedica.com/es-es/uploads/imgen/3318_960x960-imgen-3318-ampli-easy-b-2-1280x1280.jpeg",
-    1
-  )
-);
-
-// Funcion para agregar al carrito
-
-function agregarAlCarrito(item) {
-  const swalWithBootstrapButtons = Swal.mixin({
-    customClass: {
-      confirmButton: "btn btn-success",
-      cancelButton: "btn btn-danger",
-    },
-    buttonsStyling: false,
-  });
-
-  swalWithBootstrapButtons
-    .fire({
-      title: "Estas seguro de agregar este producto?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Si,agregalo al carrito",
-      cancelButtonText: "No, cancelalo!",
-
-      reverseButtons: true,
-    })
-    .then((result) => {
-      if (result.isConfirmed) {
-        swalWithBootstrapButtons.fire(
-          "Producto agregado satisfactoriamente!",
-          "Podras ver tu producto en la seccion de carrito.",
-          "success"
-        );
-        carrito.push(item);
-        let carritoJson = JSON.stringify(carrito);
-        localStorage.setItem("datosDeCarrito", carritoJson);
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-        swalWithBootstrapButtons.fire(
-          "Cancelado",
-          "Producto eliminado satisfactoriamente",
-          "error"
-        );
-      }
+    /* datos.forEach(dato =>{
+     productos.push(new Product(dato.id,dato.nombre,dato.stock,dato.descripcion,dato.img,dato.cantidad))
+   })  */
+    datos.forEach((i) => {
+      productos.push(i);
     });
-}
+    //funciona
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-function vaciarCarrito() {
-  carrito = [];
-  abrirCarrito();
-  localStorage.clear();
-}
+displayCarrito.addEventListener("click", () => abrirCarrito())
 
-//funcion para agregar evento al boton de ver productos
 boton.addEventListener("click", () => cards());
 
 function cards() {
   productos.forEach((i) => {
     let div = document.createElement("div");
     div.innerHTML = `
-                   <div class="sport_product">
-       
-                      <figure><img src="${i.img}" alt="img"/></figure>
+    <div class="sport_product">
+    
+    <figure><img src="${i.img}" alt="img"/></figure>
                      <h3> $<strong class="price_text">${i.precio}</strong></h3>
-                      <h4 class="mb-3">${i.nombre}</h4>
-                      <p class="card-text">${i.descripcion}</p>
-                      <button type="button" class="btn btn-dark " id=${i.id}>Agregar al carrito</button>
-                   </div>
+                     <h4 class="mb-3">${i.nombre}</h4>
+                     <p class="card-text">${i.descripcion}</p>
+                     <button type="button" class="btn btn-dark " id=${i.id}>Agregar al carrito</button>
+                     </div>
               `;
 
     body.append(div);
     div.className = "col-xl-6 col-lg-6 col-md-6 col-sm-12";
     let botonAgregarCarrito = document.getElementById(i.id);
-    botonAgregarCarrito.addEventListener("click", () => agregarAlCarrito(i));
+
+    botonAgregarCarrito.addEventListener("click", () => {
+      agregarAlCarrito(i.id);
+      
+      //Alerta
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-danger",
+        },
+        buttonsStyling: false,
+      });
+
+      swalWithBootstrapButtons
+        .fire({
+          title: "Estas seguro de agregar este producto?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Si,agregalo al carrito",
+          cancelButtonText: "No, cancelalo!",
+
+          reverseButtons: true,
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            swalWithBootstrapButtons.fire(
+              `${i.nombre} agregado satisfactoriamente!`,
+              "Podras ver tu producto en la seccion de carrito.",
+              "success"
+            )
+            section.classList.remove('displaynone'); ;
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            swalWithBootstrapButtons.fire(
+              "Cancelado",
+              "Producto eliminado satisfactoriamente",
+              "error"
+            );
+          }
+        });
+    });
   });
 }
-
-//Abrir carrito una vez que agregamos los productos
-
-displayCarrito.addEventListener("click", () => abrirCarrito());
-
-const abrirCarrito = () => {
-  if (carrito.length === 0) {
-    displayCarrito.innerHTML = `El carrito esta Vacio`;
+  
+function agregarAlCarrito(prodId) {
+  console.log(prodId)
+  const existe = carrito.some((prod) => prod.id === prodId);
+  if (existe) {
+    const prod = carrito.map((prod) => {
+      if (prod.id === prodId) {
+        prod.cantidad++;
+      }
+    });
   } else {
-    let obtenerDatosCarrito = localStorage.getItem("datosDeCarrito");
-    carrito = JSON.parse(obtenerDatosCarrito);
-    carrito.forEach((e) => {
+    const item = productos.find((prod) => prod.id === prodId);
+    if (item) {
+      const prod = productos.map((prod) => {
+        if (prod.id === prodId) {
+          prod.cantidad = 1;
+        }
+      });
+    }
+    carrito.push(item);
+  }
+  abrirCarrito();
+  guardarCarritoEnLocalStorage(); 
+}
+const abrirCarrito = () => {
+    carrito.forEach((prod) => {
       let crearCarrito = document.createElement("div");
       crearCarrito.innerHTML = `
-           <section class="h-100" style="background-color: #eee;">
-           <div class="container h-100 py-5">
-               <div class="row d-flex justify- content-center align-items-center h-100">
-               <div class="col-10">    
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                  <h3 class="fw-normal mb-0 text-black">Mi carrito</h3>
-                  <div>
-                    <button type="button" id="vaciar" class=" mb-0 btn btn-warning btn-block ">Vaciar Carrito</button>
-                  </div>
-                  <div>
-                    <button type="button" class=" mb-0 btn btn-warning btn-block cerrar">Cerrar carrito</button>
-                  </div>
-                </div>
-        
-                <div class="card rounded-3 mb-4">
-                  <div class="card-body p-4">
+                  
                     <div class="row d-flex justify-content-between align-items-center">
                       <div class="col-md-2 col-lg-2 col-xl-2">
                         <img
-                          src="${e.img}"
+                          src="${prod.img}"
                           class="img-fluid rounded-3" alt="producto">
                       </div>
                       <div class="col-md-3 col-lg-3 col-xl-3">
-                        <p class="lead fw-normal mb-2">${e.nombre}</p>
+                        <p class="lead fw-normal mb-2">${prod.nombre}</p>
                       </div>
                       <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
                         <button class="btn btn-link px-2"
@@ -184,7 +154,7 @@ const abrirCarrito = () => {
                           -
                         </button>
         
-                        <input id="form1" min="0" name="quantity" value="1" type="number"
+                        <input id="form1" min="0" name="quantity" value="${prod.cantidad}" type="number"
                           class="form-control form-control-sm" />
         
                         <button class="btn btn-link px-2"
@@ -194,45 +164,31 @@ const abrirCarrito = () => {
       
                       </div>
                       <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                        <h5 class="mb-0">${e.precio}</h5>
+                        <h5 class="mb-0">${prod.precio}</h5>
                       </div>
                       <div class="col-md-1 col-lg-1 col-xl-1 text-end">
-                        <a href="#!" class="text-danger"><i class="fas fa-trash fa-lg"></i></a>
+                        <button  id="id${prod.id}" class="text-danger"><img src="https://cdn-icons-png.flaticon.com/512/542/542724.png" class="fas fa-trash fa-lg"></img></button>
                       </div>
                     </div>
-                  </div>
-                </div>
+
+                
         
-                <div class="card mb-4">
-                  <div class="card-body p-4 d-flex flex-row">
-                   <form action = "" id ="form" class="form-outline flex-fill">
-                      <input id="inputdescuento" type="text" id="form1" class="form-control form-control-lg" />
-                      <label  class="form-label" for="form1">Codigo de descuento</label>
-                     <button type="submit" id="botondescuento" class="btn btn-outline-warning btn-lg ms-3">Aplicar</button>
-                    </form>
-                </div>
-        
-                <div class="card">
-                  <div class="card-body">
-                    <button type="button" id="botonPagar" class="btn btn-warning btn-block btn-lg">Proceder a pagar</button>
-                  </div>
-                </div>
-        
-              </div>
-            </div>
-          </div>
-           </section>`;
+                `;
       padre.append(crearCarrito);
+      let botonid = document.getElementById(`id${prod.id}`);
+      botonid.addEventListener("click", () => eliminarDelCarrito(prod.id));
 
-    const form = document.querySelector('#form');
+      preciototal.innerHTML = separador(
+      carrito.reduce((acc, prod) => acc + prod.precio * prod.cantidad, 0)
+      );
     
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      let input = document.querySelector('#inputdescuento').value;
-     // Funciona el input 
-    })
-
-
+    
+      const form = document.querySelector("#form");
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        let input = document.querySelector("#inputdescuento").value;
+      });
+      
       crearCarrito.className = "display";
       let botonCerrarCarrito = document.querySelector(".cerrar");
       botonCerrarCarrito.addEventListener("click", () =>
@@ -244,4 +200,39 @@ const abrirCarrito = () => {
       };
     });
   }
+
+const eliminarDelCarrito = (prodId) => {
+  const item = carrito.find((prod) => prod.id === prodId);
+  const indice = carrito.indexOf(item);
+  carrito.splice(indice, 1);
+  abrirCarrito();
+  guardarCarritoEnLocalStorage();
 };
+
+function vaciarCarrito() {
+  carrito = [];
+  abrirCarrito();
+  localStorage.clear();
+}
+
+const separador = (numb) => {
+  let str = numb.toString().split(".");
+  str[0] = str[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return str.join(".");
+};
+;
+
+export const agruparAsync = async () => {
+  await cargar();
+  mostrarProductos(productos);
+};
+
+function guardarCarritoEnLocalStorage() {
+  miLocalStorage.setItem("carrito", JSON.stringify(carrito));
+}
+export function cargarCarritoDeLocalStorage() {
+  if (miLocalStorage.getItem("carrito") !== null) {
+      carrito = JSON.parse(miLocalStorage.getItem("carrito"));
+      abrirCarrito();
+  }
+}
