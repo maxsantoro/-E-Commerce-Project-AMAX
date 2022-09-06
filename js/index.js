@@ -138,8 +138,17 @@ function agregarAlCarrito(prodId) {
   guardarCarritoEnLocalStorage(); 
 } */
 const agregarAlCarrito = (prodId) => {
-  const item = productos.find((prod) => prod.id == prodId);
-  carrito.push(item);
+  const existe = carrito.some(prod => prod.id === prodId)
+  if(existe){
+    const prod = carrito.map(prod => {
+      if(prod.id === prodId){
+        prod.cantidad++
+      }
+    })
+  }else{
+    const item = productos.find((prod) => prod.id == prodId);
+    carrito.push(item);
+  }
   abrirCarrito();
 }
 const abrirCarrito = () => {
@@ -159,20 +168,10 @@ const abrirCarrito = () => {
                         <p class="lead fw-normal mb-2">${prod.nombre}</p>
                       </div>
                       <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
-                        <button class="btn btn-link px-2"
-                          onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-                          -
-                        </button>
-        
-                        <input id="form1" min="0" name="quantity" value="${prod.cantidad}" type="number"
-                          class="form-control form-control-sm" />
-        
-                        <button class="btn btn-link px-2"
-                          onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-                          +
-                        </button>
-      
+
+                       <h5 id="form1" class="form-control form-control-sm" >${prod.cantidad}</h5>
                       </div>
+
                       <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
                         <h5 class="mb-0">${prod.precio}</h5>
                       </div>
