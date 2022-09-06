@@ -8,10 +8,16 @@ let cardCarrito = document.getElementById("cardCarrito");
 let padre = document.getElementById("planta");
 let cerrarCarrito = document.querySelector(".display");
 let section = document.getElementById("sectioncarrito");
-let preciototal = document.getElementById("preciototal")
+let preciototal = document.getElementById("preciototal");
+let vaciarCarrito = document.getElementById("vaciar");
+let contadorCarrito = document.getElementById("contadorCarrito")
 
 document.addEventListener("DOMContentLoaded", () => {
   fetchProductos();
+  if(localStorage.getItem('carrito')){
+    carrito = JSON.parse(localStorage.getItem('carrito'))
+    abrirCarrito()
+  }
 });
 
 
@@ -29,25 +35,22 @@ class Product {
     this.cantidad = cantidad;
   }
 }
-const miLocalStorage = window.localStorage;
+//Traemos los datos
+
 const fetchProductos = async () => {
   try {
     const response = await fetch("../productos.json");
     const datos = await response.json();
-
-    /* datos.forEach(dato =>{
-     productos.push(new Product(dato.id,dato.nombre,dato.stock,dato.descripcion,dato.img,dato.cantidad))
-   })  */
+  
     datos.forEach((i) => {
       productos.push(i);
     });
-    //funciona
   } catch (error) {
     console.log(error);
   }
 };
 
-displayCarrito.addEventListener("click", () => abrirCarrito())
+displayCarrito.addEventListener("click", () =>abrirCarrito())
 
 boton.addEventListener("click", () => cards());
 
@@ -110,7 +113,7 @@ function cards() {
     });
   });
 }
-  
+  /* 
 function agregarAlCarrito(prodId) {
   console.log(prodId)
   const existe = carrito.some((prod) => prod.id === prodId);
@@ -133,8 +136,15 @@ function agregarAlCarrito(prodId) {
   }
   abrirCarrito();
   guardarCarritoEnLocalStorage(); 
+} */
+const agregarAlCarrito = (prodId) => {
+  const item = productos.find((prod) => prod.id == prodId);
+  carrito.push(item);
+  abrirCarrito();
 }
 const abrirCarrito = () => {
+    padre.innerHTML = ""
+
     carrito.forEach((prod) => {
       let crearCarrito = document.createElement("div");
       crearCarrito.innerHTML = `
@@ -175,7 +185,9 @@ const abrirCarrito = () => {
         
                 `;
       padre.append(crearCarrito);
+      localStorage.setItem('carrito',JSON.stringify(carrito))
       let botonid = document.getElementById(`id${prod.id}`);
+      contadorCarrito.innerText = carrito.length
       botonid.addEventListener("click", () => eliminarDelCarrito(prod.id));
 
       preciototal.innerHTML = separador(
@@ -209,11 +221,10 @@ const eliminarDelCarrito = (prodId) => {
   guardarCarritoEnLocalStorage();
 };
 
-function vaciarCarrito() {
-  carrito = [];
+vaciarCarrito.addEventListener('click', () => {
+  carrito.length = 0;
   abrirCarrito();
-  localStorage.clear();
-}
+})
 
 const separador = (numb) => {
   let str = numb.toString().split(".");
@@ -221,18 +232,3 @@ const separador = (numb) => {
   return str.join(".");
 };
 ;
-
-export const agruparAsync = async () => {
-  await cargar();
-  mostrarProductos(productos);
-};
-
-function guardarCarritoEnLocalStorage() {
-  miLocalStorage.setItem("carrito", JSON.stringify(carrito));
-}
-export function cargarCarritoDeLocalStorage() {
-  if (miLocalStorage.getItem("carrito") !== null) {
-      carrito = JSON.parse(miLocalStorage.getItem("carrito"));
-      abrirCarrito();
-  }
-}

@@ -200,9 +200,15 @@ blockquote {
      margin: 20px 0 20px;
      padding: 30px;
 }
+.contadorcarrito{
+     color: black;
+     background-color: #136af8 ;
+}
+
 .png{
      height: 31px;
     width: 38px;
+    background-color: #136af8 
 
 }
 
